@@ -52,12 +52,14 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
         jt = persistService.getJdbcTemplate();
     }
     
+    @Override
     public Page<PermissionInfo> getPermissions(String role, int pageNo, int pageSize) {
         PaginationHelper<PermissionInfo> helper = persistService.createPaginationHelper();
         
         String sqlCountRows = "select count(*) from permissions where ";
-        String sqlFetchRows = "select role,resource_,action from permissions where ";
-        
+//        String sqlFetchRows = "select role,resource_,action from permissions where ";
+        String sqlFetchRows = "select role,resource_,action from  (select ROWNUM as rowno,t.* from permissions t where rownum <=?) temp where ";
+
         String where = " role='" + role + "' ";
         
         if (StringUtils.isBlank(role)) {
@@ -66,7 +68,7 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
         
         try {
             Page<PermissionInfo> pageInfo = helper
-                    .fetchPage(sqlCountRows + where, sqlFetchRows + where, new ArrayList<String>().toArray(), pageNo,
+                    .fetchPage(sqlCountRows + where, sqlFetchRows + where+" and temp.rowno >=? ", new ArrayList<String>().toArray(), pageNo,
                             pageSize, PERMISSION_ROW_MAPPER);
             
             if (pageInfo == null) {
@@ -90,6 +92,7 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
      * @param resource resource string value.
      * @param action action string value.
      */
+    @Override
     public void addPermission(String role, String resource, String action) {
         
         String sql = "INSERT into permissions (role, resource_, action) VALUES (?, ?, ?)";
@@ -109,6 +112,7 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
      * @param resource resource string value.
      * @param action action string value.
      */
+    @Override
     public void deletePermission(String role, String resource, String action) {
         
         String sql = "DELETE from permissions WHERE role=? and resource_=? and action=?";

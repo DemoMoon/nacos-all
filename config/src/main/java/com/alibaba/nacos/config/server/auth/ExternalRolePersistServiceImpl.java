@@ -62,8 +62,9 @@ public class ExternalRolePersistServiceImpl implements RolePersistService {
         PaginationHelper<RoleInfo> helper = persistService.createPaginationHelper();
         
         String sqlCountRows = "select count(*) from (select distinct role from roles) roles where ";
-        String sqlFetchRows = "select role,username from roles where ";
-        
+//        String sqlFetchRows = "select role,username from roles where ";
+        String sqlFetchRows = "select role,username from  (select ROWNUM as rowno,t.* from roles t where rownum <=?) temp where temp.rowno >=? and  ";
+
         String where = " 1=1 ";
         
         try {
@@ -88,8 +89,9 @@ public class ExternalRolePersistServiceImpl implements RolePersistService {
         PaginationHelper<RoleInfo> helper = persistService.createPaginationHelper();
         
         String sqlCountRows = "select count(*) from roles where ";
-        String sqlFetchRows = "select role,username from roles where ";
-        
+//        String sqlFetchRows = "select role,username from roles where ";
+        String sqlFetchRows = "SELECT role,username from (select ROWNUM as rowno,t.* from roles t where rownum <=?) temp  where";
+
         String where = " username='" + username + "' ";
         
         if (StringUtils.isBlank(username)) {
@@ -98,7 +100,7 @@ public class ExternalRolePersistServiceImpl implements RolePersistService {
         
         try {
             return helper
-                    .fetchPage(sqlCountRows + where, sqlFetchRows + where, new ArrayList<String>().toArray(), pageNo,
+                    .fetchPage(sqlCountRows + where, sqlFetchRows + where +" and temp.rowno >=? ", new ArrayList<String>().toArray(), pageNo,
                             pageSize, ROLE_INFO_ROW_MAPPER);
         } catch (CannotGetJdbcConnectionException e) {
             LogUtil.FATAL_LOG.error("[db-error] " + e.toString(), e);
