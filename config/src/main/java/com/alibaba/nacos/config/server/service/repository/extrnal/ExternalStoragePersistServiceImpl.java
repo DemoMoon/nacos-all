@@ -2445,23 +2445,19 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
         String schema = configAdvanceInfo == null ? null : (String) configAdvanceInfo.get("schema");
 
         try {
-            List<String> paramList = new ArrayList<String>();
             StringBuilder where = new StringBuilder(" where 1=1 ");
             if (StringUtils.isNotBlank(configInfo.getDataId())) {
                 where.append(" and data_id=? ");
-                paramList.add(configInfo.getDataId());
             } else {
                 where.append(" and data_id is null ");
             }
             if (StringUtils.isNotBlank(configInfo.getGroup())) {
                 where.append(" and group_id=? ");
-                paramList.add(configInfo.getGroup());
             } else {
                 where.append(" and group_id is null ");
             }
             if (StringUtils.isNotBlank(tenantTmp)) {
                 where.append(" and tenant_id=? ");
-                paramList.add(tenantTmp);
             } else {
                 where.append(" and tenant_id is null ");
             }
@@ -2626,16 +2622,33 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
     }
 
     @Override
-    public void insertConfigHistoryAtomic(long id, ConfigInfo configInfo, String srcIp, String srcUser,
-                                          final Timestamp time, String ops) {
-        String appNameTmp = StringUtils.isBlank(configInfo.getAppName()) ? StringUtils.EMPTY : configInfo.getAppName();
-        String tenantTmp = StringUtils.isBlank(configInfo.getTenant()) ? StringUtils.EMPTY : configInfo.getTenant();
-        String md5Tmp = MD5Utils.md5Hex(configInfo.getContent(), Constants.ENCODE);
+    public void insertConfigHistoryAtomic(final long id, final ConfigInfo configInfo, final String srcIp, final String srcUser,
+                                          final Timestamp time, final String ops) {
+        final String appNameTmp = StringUtils.isBlank(configInfo.getAppName()) ? StringUtils.EMPTY : configInfo.getAppName();
+        final String tenantTmp = StringUtils.isBlank(configInfo.getTenant()) ? StringUtils.EMPTY : configInfo.getTenant();
+        final String md5Tmp = MD5Utils.md5Hex(configInfo.getContent(), Constants.ENCODE);
         try {
-            jt.update(
+            String sql="INSERT INTO his_config_info (id,data_id,group_id,tenant_id,app_name,content,md5,src_ip,src_user,gmt_modified,op_type) "
+                + "VALUES(?,?,?,?,?,?,?,?,?,?,?)";
+            jt.execute((PreparedStatementCreator) connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql);
+                ps.setLong(1,id);
+                ps.setString(2, configInfo.getDataId());
+                ps.setString(3, configInfo.getGroup());
+                ps.setString(4, tenantTmp);
+                ps.setString(5, appNameTmp);
+                ps.setBytes(6, configInfo.getContent().getBytes());
+                ps.setString(7, md5Tmp);
+                ps.setString(8, srcIp);
+                ps.setBytes(9, StringUtils.isBlank(srcUser) ? null : srcUser.getBytes());
+                ps.setTimestamp(10, time);
+                ps.setString(11, ops);
+                return ps;
+            }, PreparedStatement::executeUpdate);
+          /*  jt.update(
                 "INSERT INTO his_config_info (id,data_id,group_id,tenant_id,app_name,content,md5,src_ip,src_user,gmt_modified,op_type) "
                     + "VALUES(?,?,?,?,?,?,?,?,?,?,?)", id, configInfo.getDataId(), configInfo.getGroup(),
-                tenantTmp, appNameTmp, configInfo.getContent(), md5Tmp, srcIp, srcUser, time, ops);
+                tenantTmp, appNameTmp, configInfo.getContent(), md5Tmp, srcIp, srcUser, time, ops);*/
         } catch (DataAccessException e) {
             LogUtil.FATAL_LOG.error("[db-error] " + e.toString(), e);
             throw e;
@@ -2668,14 +2681,15 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
             where.append(" and tenant_id is null ");
         }
         String sqlCountRows = "select count(*) from his_config_info "+where.toString();
-        String sqlFetchRows =
+        /*String sqlFetchRows =
             "select nid,data_id,group_id,tenant_id,app_name,src_ip,src_user,op_type,gmt_create,gmt_modified from his_config_info "
-                + where.toString()+"order by nid desc";
+                + where.toString()+"order by nid desc";*/
+        String sqlFetchRows ="SELECT nid,data_id,group_id,tenant_id,app_name,src_ip,src_user,op_type,gmt_create,gmt_modified from" +
+            " (select ROWNUM as rowno,t.* from (SELECT nid,data_id,group_id,tenant_id,app_name,src_ip,src_user,op_type,gmt_create,gmt_modified from his_config_info order by nid desc) t where rownum <=?) temp " +where.toString();
 
-        Page<ConfigHistoryInfo> page = null;
+        Page<ConfigHistoryInfo> page;
         try {
-            page = helper
-                .fetchPage(sqlCountRows, sqlFetchRows, paramList.toArray(), pageNo, pageSize,
+            page = helper.fetchPage(sqlCountRows, sqlFetchRows + " and temp.rowno >=? ", paramList.toArray(), pageNo, pageSize,
                     HISTORY_LIST_ROW_MAPPER);
         } catch (DataAccessException e) {
             LogUtil.FATAL_LOG

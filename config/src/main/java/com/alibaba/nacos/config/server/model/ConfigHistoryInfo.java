@@ -102,11 +102,11 @@ public class ConfigHistoryInfo implements Serializable {
         this.srcIp = srcIp;
     }
     
-    public byte[] getSrcUser() {
+    public String getSrcUser() {
         return srcUser;
     }
     
-    public void setSrcUser(byte[] srcUser) {
+    public void setSrcUser(String srcUser) {
         this.srcUser = srcUser;
     }
     
@@ -154,7 +154,7 @@ public class ConfigHistoryInfo implements Serializable {
     
     private String srcIp;
     
-    private byte[] srcUser;
+    private String srcUser;
     
     /**
      * Operation type, include inserting, updating and deleting.

@@ -490,7 +490,7 @@ public final class RowMapperManager {
             configHistoryInfo.setSrcIp(rs.getString("src_ip"));
             byte[] srcUsers = rs.getBytes("src_user");
             if(srcUsers!=null){
-                configHistoryInfo.setSrcUser(rs.getBytes("src_user"));
+                configHistoryInfo.setSrcUser(new String(rs.getBytes("src_user")));
             }
             configHistoryInfo.setOpType(rs.getString("op_type"));
             configHistoryInfo.setCreatedTime(rs.getTimestamp("gmt_create"));
@@ -510,10 +510,10 @@ public final class RowMapperManager {
             configHistoryInfo.setTenant(rs.getString("tenant_id"));
             configHistoryInfo.setAppName(rs.getString("app_name"));
             configHistoryInfo.setMd5(rs.getString("md5"));
-            configHistoryInfo.setContent(rs.getString("content"));
+            configHistoryInfo.setContent(new String(rs.getBytes("content")));
             byte[] srcUsers = rs.getBytes("src_user");
             if(srcUsers!=null){
-                configHistoryInfo.setSrcUser(rs.getBytes("src_user"));
+                configHistoryInfo.setSrcUser(new String(rs.getBytes("src_user")));
             }
             configHistoryInfo.setSrcIp(rs.getString("src_ip"));
             configHistoryInfo.setOpType(rs.getString("op_type"));
