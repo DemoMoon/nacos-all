@@ -289,7 +289,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
                 where.append(" and tenant_id is null ");
             }
             jt.update(
-                "UPDATE config_info_beta SET content=?, md5 = ?, src_ip=?,src_user=?,gmt_modified=?,app_name=?"+where.toString(), configInfo.getContent(), md5, srcIp, srcUser,
+                "UPDATE config_info_beta SET content=?, md5 = ?, src_ip=?,src_user=?,gmt_modified=?,app_name=?" + where.toString(), configInfo.getContent(), md5, srcIp, srcUser,
                 time, appNameTmp, configInfo.getDataId(), configInfo.getGroup(), tenantTmp);
         } catch (CannotGetJdbcConnectionException e) {
             LogUtil.FATAL_LOG.error("[db-error] " + e.toString(), e);
@@ -327,7 +327,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
                 where.append(" and tag_id is null ");
             }
             jt.update(
-                "UPDATE config_info_tag SET content=?, md5 = ?, src_ip=?,src_user=?,gmt_modified=?,app_name=?"+where.toString(), configInfo.getContent(), md5,
+                "UPDATE config_info_tag SET content=?, md5 = ?, src_ip=?,src_user=?,gmt_modified=?,app_name=?" + where.toString(), configInfo.getContent(), md5,
                 srcIp, srcUser, time, appNameTmp, configInfo.getDataId(), configInfo.getGroup(), tenantTmp, tagTmp);
         } catch (CannotGetJdbcConnectionException e) {
             LogUtil.FATAL_LOG.error("[db-error] " + e.toString(), e);
@@ -383,7 +383,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
             where.append(" and gmt_modified=? ");
             paramList.add(lastTime);
             jt.update(
-                "UPDATE config_info SET md5 = ? "+where.toString(),
+                "UPDATE config_info SET md5 = ? " + where.toString(),
                 paramList.toArray());
         } catch (CannotGetJdbcConnectionException e) {
             LogUtil.FATAL_LOG.error("[db-error] " + e.toString(), e);
@@ -494,7 +494,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
                     } else {
                         where.append(" and tenant_id is null ");
                     }
-                    jt.update("DELETE FROM config_info_beta "+where.toString(), dataId,
+                    jt.update("DELETE FROM config_info_beta " + where.toString(), dataId,
                         group, tenantTmp);
                 }
             } catch (CannotGetJdbcConnectionException e) {
@@ -540,9 +540,9 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
         } else {
             where.append(" and datum_id is null ");
         }
-        String select = "SELECT content FROM config_info_aggr "+where.toString();
+        String select = "SELECT content FROM config_info_aggr " + where.toString();
         String insert = "INSERT INTO config_info_aggr(data_id, group_id, tenant_id, datum_id, app_name, content, gmt_modified) VALUES(?,?,?,?,?,?,?) ";
-        String update = "UPDATE config_info_aggr SET content = ? , gmt_modified = ?  "+where.toString();
+        String update = "UPDATE config_info_aggr SET content = ? , gmt_modified = ?  " + where.toString();
 
         try {
             try {
@@ -588,7 +588,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
         } else {
             where.append(" and datum_id is null ");
         }
-        String sql = "DELETE FROM config_info_aggr "+where.toString();
+        String sql = "DELETE FROM config_info_aggr " + where.toString();
 
         try {
             this.jt.update(sql, new PreparedStatementSetter() {
@@ -626,7 +626,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
         } else {
             where.append(" and tenant_id is null ");
         }
-        String sql = "DELETE FROM config_info_aggr "+where.toString();
+        String sql = "DELETE FROM config_info_aggr " + where.toString();
 
         try {
             this.jt.update(sql, new PreparedStatementSetter() {
@@ -670,7 +670,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
             where.append(" and tenant_id is null ");
         }
         final String sql =
-            "delete from config_info_aggr "+where.toString() +"and datum_id in ("
+            "delete from config_info_aggr " + where.toString() + "and datum_id in ("
                 + datumString.toString() + ")";
         try {
             jt.update(sql, dataId, group, tenantTmp);
@@ -820,7 +820,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
                 where.append(" and tenant_id is null ");
             }
             return this.jt.queryForObject(
-                "SELECT ID,data_id,group_id,tenant_id,app_name,content,beta_ips FROM config_info_beta "+where.toString(),
+                "SELECT ID,data_id,group_id,tenant_id,app_name,content,beta_ips FROM config_info_beta " + where.toString(),
                 paramList.toArray(), CONFIG_INFO4BETA_ROW_MAPPER);
         } catch (EmptyResultDataAccessException e) { // Indicates that the data does not exist, returns null.
             return null;
@@ -1332,17 +1332,25 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
         if (result == null) {
             throw new IllegalArgumentException("configInfoCount error");
         }
-        return result.intValue();
+        return result;
     }
 
     @Override
     public int configInfoCount(String tenant) {
-        String sql = " SELECT COUNT(ID) FROM config_info where tenant_id like ?";
-        Integer result = jt.queryForObject(sql, new Object[]{tenant}, Integer.class);
+        String sql;
+        List<String> paramList = new ArrayList<String>();
+        if (StringUtils.isEmpty(tenant)) {
+            sql = " SELECT COUNT(ID) FROM config_info where tenant_id is null";
+        } else {
+            sql = " SELECT COUNT(ID) FROM config_info where tenant_id like ?";
+            paramList.add(tenant);
+        }
+
+        Integer result = jt.queryForObject(sql, paramList.toArray(), Integer.class);
         if (result == null) {
             throw new IllegalArgumentException("configInfoCount error");
         }
-        return result.intValue();
+        return result;
     }
 
     @Override
@@ -1352,7 +1360,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
         if (result == null) {
             throw new IllegalArgumentException("configInfoBetaCount error");
         }
-        return result.intValue();
+        return result;
     }
 
     @Override
@@ -1362,7 +1370,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
         if (result == null) {
             throw new IllegalArgumentException("configInfoBetaCount error");
         }
-        return result.intValue();
+        return result;
     }
 
     @Override
@@ -1387,7 +1395,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
         if (result == null) {
             throw new IllegalArgumentException("aggrConfigInfoCount error");
         }
-        return result.intValue();
+        return result;
     }
 
     @Override
@@ -2291,7 +2299,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
         } else {
             where.append(" and tenant_id is null ");
         }
-        String sql = "SELECT tag_name FROM config_tags_relation"+where.toString();
+        String sql = "SELECT tag_name FROM config_tags_relation" + where.toString();
         try {
             return jt.queryForList(sql, new Object[]{tenant}, String.class);
         } catch (EmptyResultDataAccessException e) {
@@ -2326,7 +2334,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
         } else {
             where.append(" and tenant_id is null ");
         }
-        String sql = "SELECT tag_name FROM config_tags_relation "+where.toString();
+        String sql = "SELECT tag_name FROM config_tags_relation " + where.toString();
         try {
             return jt.queryForList(sql, paramList.toArray(), String.class);
         } catch (EmptyResultDataAccessException e) {
@@ -2365,7 +2373,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
             where.append(" and tenant_id is null ");
         }
         try {
-            jt.update("DELETE FROM config_info"+where.toString(),paramList.toArray());
+            jt.update("DELETE FROM config_info" + where.toString(), paramList.toArray());
         } catch (CannotGetJdbcConnectionException e) {
             LogUtil.FATAL_LOG.error("[db-error] " + e.toString(), e);
             throw e;
@@ -2424,7 +2432,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
             } else {
                 where.append(" and tag_id is null ");
             }
-            jt.update("DELETE FROM config_info_tag "+where.toString(), dataId,
+            jt.update("DELETE FROM config_info_tag " + where.toString(), dataId,
                 group, tenantTmp, tagTmp);
         } catch (CannotGetJdbcConnectionException e) {
             LogUtil.FATAL_LOG.error("[db-error] " + e.toString(), e);
@@ -2461,7 +2469,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
             } else {
                 where.append(" and tenant_id is null ");
             }
-            final String sql="UPDATE config_info SET content=?, md5 = ?, src_ip=?,src_user=?,gmt_modified=?,"
+            final String sql = "UPDATE config_info SET content=?, md5 = ?, src_ip=?,src_user=?,gmt_modified=?,"
                 + "app_name=?,c_desc=?,c_use=?,effect=?,type=?,c_schema=? "
                 + where.toString();
            /* jt.update("UPDATE config_info SET content=?, md5 = ?, src_ip=?,src_user=?,gmt_modified=?,"
@@ -2548,7 +2556,7 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
             }
             List<String> configTagList = this.selectTagByConfig(dataId, group, tenant);
             ConfigAdvanceInfo configAdvance = this.jt.queryForObject(
-                "SELECT gmt_create,gmt_modified,src_user,src_ip,c_desc,c_use,effect,type,c_schema FROM config_info "+where.toString(),
+                "SELECT gmt_create,gmt_modified,src_user,src_ip,c_desc,c_use,effect,type,c_schema FROM config_info " + where.toString(),
                 paramList.toArray(), CONFIG_ADVANCE_INFO_ROW_MAPPER);
             if (configTagList != null && !configTagList.isEmpty()) {
                 StringBuilder configTagsTmp = new StringBuilder();
@@ -2628,11 +2636,11 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
         final String tenantTmp = StringUtils.isBlank(configInfo.getTenant()) ? StringUtils.EMPTY : configInfo.getTenant();
         final String md5Tmp = MD5Utils.md5Hex(configInfo.getContent(), Constants.ENCODE);
         try {
-            String sql="INSERT INTO his_config_info (id,data_id,group_id,tenant_id,app_name,content,md5,src_ip,src_user,gmt_modified,op_type) "
+            String sql = "INSERT INTO his_config_info (id,data_id,group_id,tenant_id,app_name,content,md5,src_ip,src_user,gmt_modified,op_type) "
                 + "VALUES(?,?,?,?,?,?,?,?,?,?,?)";
             jt.execute((PreparedStatementCreator) connection -> {
                 PreparedStatement ps = connection.prepareStatement(sql);
-                ps.setLong(1,id);
+                ps.setLong(1, id);
                 ps.setString(2, configInfo.getDataId());
                 ps.setString(3, configInfo.getGroup());
                 ps.setString(4, tenantTmp);
@@ -2680,17 +2688,17 @@ public class ExternalStoragePersistServiceImpl implements PersistService {
         } else {
             where.append(" and tenant_id is null ");
         }
-        String sqlCountRows = "select count(*) from his_config_info "+where.toString();
+        String sqlCountRows = "select count(*) from his_config_info " + where.toString();
         /*String sqlFetchRows =
             "select nid,data_id,group_id,tenant_id,app_name,src_ip,src_user,op_type,gmt_create,gmt_modified from his_config_info "
                 + where.toString()+"order by nid desc";*/
-        String sqlFetchRows ="SELECT nid,data_id,group_id,tenant_id,app_name,src_ip,src_user,op_type,gmt_create,gmt_modified from" +
-            " (select ROWNUM as rowno,t.* from (SELECT nid,data_id,group_id,tenant_id,app_name,src_ip,src_user,op_type,gmt_create,gmt_modified from his_config_info order by nid desc) t where rownum <=?) temp " +where.toString();
+        String sqlFetchRows = "SELECT nid,data_id,group_id,tenant_id,app_name,src_ip,src_user,op_type,gmt_create,gmt_modified from" +
+            " (select ROWNUM as rowno,t.* from (SELECT nid,data_id,group_id,tenant_id,app_name,src_ip,src_user,op_type,gmt_create,gmt_modified from his_config_info order by nid desc) t where rownum <=?) temp " + where.toString();
 
         Page<ConfigHistoryInfo> page;
         try {
             page = helper.fetchPage(sqlCountRows, sqlFetchRows + " and temp.rowno >=? ", paramList.toArray(), pageNo, pageSize,
-                    HISTORY_LIST_ROW_MAPPER);
+                HISTORY_LIST_ROW_MAPPER);
         } catch (DataAccessException e) {
             LogUtil.FATAL_LOG
                 .error("[list-config-history] error, dataId:{}, group:{}", new Object[]{dataId, group}, e);
