@@ -488,7 +488,7 @@ public class ConfigController {
                         .append(ci.getAppName()).append("\r\n");
             }
             String itemName = ci.getGroup() + "/" + ci.getDataId();
-            zipItemList.add(new ZipUtils.ZipItem(itemName, ci.getContent()+""));
+            zipItemList.add(new ZipUtils.ZipItem(itemName, ci.getContent() + ""));
         }
         if (metaData != null) {
             zipItemList.add(new ZipUtils.ZipItem(".meta.yml", metaData.toString()));
@@ -627,7 +627,7 @@ public class ConfigController {
             return ResultBuilder.buildResult(ResultCodeEnum.NO_SELECTED_CONFIG, failedData);
         }
         configBeansList.removeAll(Collections.singleton(null));
-    
+        
         namespace = NamespaceUtil.processNamespaceParameter(namespace);
         if (StringUtils.isNotBlank(namespace) && persistService.tenantInfoCountByTenantId(namespace) <= 0) {
             failedData.put("succCount", 0);

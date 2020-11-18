@@ -16,7 +16,6 @@
 
 package com.alibaba.nacos.config.server.model;
 
-
 /**
  * ConfigInfo.
  *

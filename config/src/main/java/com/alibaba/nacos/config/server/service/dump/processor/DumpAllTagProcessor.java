@@ -52,11 +52,11 @@ public class DumpAllTagProcessor implements NacosTaskProcessor {
             if (page != null) {
                 for (ConfigInfoTagWrapper cf : page.getPageItems()) {
                     boolean result = ConfigCacheService
-                            .dumpTag(cf.getDataId(), cf.getGroup(), cf.getTenant(), cf.getTag(), new String(cf.getContent()),
-                                    cf.getLastModified());
+                            .dumpTag(cf.getDataId(), cf.getGroup(), cf.getTenant(), cf.getTag(),
+                                    new String(cf.getContent()), cf.getLastModified());
                     LogUtil.DUMP_LOG.info("[dump-all-Tag-ok] result={}, {}, {}, length={}, md5={}", result,
                             GroupKey2.getKey(cf.getDataId(), cf.getGroup()), cf.getLastModified(),
-                        new String(cf.getContent()).length(), cf.getMd5());
+                            cf.getContent().length(), cf.getMd5());
                 }
                 
                 actualRowCount += page.getPageItems().size();

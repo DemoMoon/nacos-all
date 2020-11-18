@@ -16,7 +16,6 @@
 
 package com.alibaba.nacos.config.server.service.repository;
 
-import com.alibaba.nacos.api.utils.StringUtils;
 import com.alibaba.nacos.config.server.auth.PermissionInfo;
 import com.alibaba.nacos.config.server.auth.RoleInfo;
 import com.alibaba.nacos.config.server.model.ConfigAdvanceInfo;
@@ -317,7 +316,7 @@ public final class RowMapperManager {
             info.setCreateTime(rs.getTimestamp("gmt_modified").getTime());
             info.setModifyTime(rs.getTimestamp("gmt_modified").getTime());
             byte[] srcUsers = rs.getBytes("src_user");
-            if(srcUsers!=null){
+            if (srcUsers != null) {
                 info.setCreateUser(new String(srcUsers));
             }
             info.setCreateIp(rs.getString("src_ip"));
@@ -326,7 +325,7 @@ public final class RowMapperManager {
             info.setEffect(rs.getString("effect"));
             info.setType(rs.getString("type"));
             byte[] cSchemas = rs.getBytes("c_schema");
-            if(cSchemas!=null){
+            if (cSchemas != null) {
                 info.setSchema(new String(cSchemas));
             }
             return info;
@@ -357,7 +356,7 @@ public final class RowMapperManager {
             info.setCreateTime(rs.getTimestamp("gmt_modified").getTime());
             info.setModifyTime(rs.getTimestamp("gmt_modified").getTime());
             byte[] srcUsers = rs.getBytes("src_user");
-            if(srcUsers!=null){
+            if (srcUsers != null) {
                 info.setCreateUser(new String(srcUsers));
             }
             info.setCreateIp(rs.getString("src_ip"));
@@ -366,7 +365,7 @@ public final class RowMapperManager {
             info.setEffect(rs.getString("effect"));
             info.setType(rs.getString("type"));
             byte[] cSchemas = rs.getBytes("c_schema");
-            if(cSchemas!=null){
+            if (cSchemas != null) {
                 info.setSchema(new String(cSchemas));
             }
             return info;
@@ -489,7 +488,7 @@ public final class RowMapperManager {
             configHistoryInfo.setAppName(rs.getString("app_name"));
             configHistoryInfo.setSrcIp(rs.getString("src_ip"));
             byte[] srcUsers = rs.getBytes("src_user");
-            if(srcUsers!=null){
+            if (srcUsers != null) {
                 configHistoryInfo.setSrcUser(new String(rs.getBytes("src_user")));
             }
             configHistoryInfo.setOpType(rs.getString("op_type"));
@@ -512,7 +511,7 @@ public final class RowMapperManager {
             configHistoryInfo.setMd5(rs.getString("md5"));
             configHistoryInfo.setContent(new String(rs.getBytes("content")));
             byte[] srcUsers = rs.getBytes("src_user");
-            if(srcUsers!=null){
+            if (srcUsers != null) {
                 configHistoryInfo.setSrcUser(new String(rs.getBytes("src_user")));
             }
             configHistoryInfo.setSrcIp(rs.getString("src_ip"));

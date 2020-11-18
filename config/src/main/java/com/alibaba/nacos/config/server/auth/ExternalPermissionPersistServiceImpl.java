@@ -57,9 +57,9 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
         PaginationHelper<PermissionInfo> helper = persistService.createPaginationHelper();
         
         String sqlCountRows = "select count(*) from permissions where ";
-//        String sqlFetchRows = "select role,resource_,action from permissions where ";
+        //        String sqlFetchRows = "select role,resource_,action from permissions where ";
         String sqlFetchRows = "select role,resource_,action from  (select ROWNUM as rowno,t.* from permissions t where rownum <=?) temp where ";
-
+        
         String where = " role='" + role + "' ";
         
         if (StringUtils.isBlank(role)) {
@@ -68,8 +68,8 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
         
         try {
             Page<PermissionInfo> pageInfo = helper
-                    .fetchPage(sqlCountRows + where, sqlFetchRows + where+" and temp.rowno >=? ", new ArrayList<String>().toArray(), pageNo,
-                            pageSize, PERMISSION_ROW_MAPPER);
+                    .fetchPage(sqlCountRows + where, sqlFetchRows + where + " and temp.rowno >=? ",
+                            new ArrayList<String>().toArray(), pageNo, pageSize, PERMISSION_ROW_MAPPER);
             
             if (pageInfo == null) {
                 pageInfo = new Page<>();
@@ -88,9 +88,9 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
     /**
      * Execute add permission operation.
      *
-     * @param role role string value.
+     * @param role     role string value.
      * @param resource resource string value.
-     * @param action action string value.
+     * @param action   action string value.
      */
     @Override
     public void addPermission(String role, String resource, String action) {
@@ -108,9 +108,9 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
     /**
      * Execute delete permission operation.
      *
-     * @param role role string value.
+     * @param role     role string value.
      * @param resource resource string value.
-     * @param action action string value.
+     * @param action   action string value.
      */
     @Override
     public void deletePermission(String role, String resource, String action) {

@@ -53,13 +53,13 @@ class ExternalStoragePaginationHelperImpl<E> implements PaginationHelper {
      */
     @Override
     public Page<E> fetchPage(final String sqlCountRows, final String sqlFetchRows, final Object[] args,
-                             final int pageNo, final int pageSize, final RowMapper rowMapper) {
+            final int pageNo, final int pageSize, final RowMapper rowMapper) {
         return fetchPage(sqlCountRows, sqlFetchRows, args, pageNo, pageSize, null, rowMapper);
     }
     
     @Override
     public Page<E> fetchPage(final String sqlCountRows, final String sqlFetchRows, final Object[] args,
-                             final int pageNo, final int pageSize, final Long lastMaxId, final RowMapper rowMapper) {
+            final int pageNo, final int pageSize, final Long lastMaxId, final RowMapper rowMapper) {
         if (pageNo <= 0 || pageSize <= 0) {
             throw new IllegalArgumentException("pageNo and pageSize must be greater than zero");
         }
@@ -88,18 +88,18 @@ class ExternalStoragePaginationHelperImpl<E> implements PaginationHelper {
         
         final int startRow = (pageNo - 1) * pageSize;
         String selectSql = "";
-        Object[] newArgs = new Object[args.length+2];
+        Object[] newArgs = new Object[args.length + 2];
         if (isDerby()) {
             selectSql = sqlFetchRows + " OFFSET " + startRow + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
         } else if (lastMaxId != null) {
-            newArgs= new Object[] {pageSize,lastMaxId,(pageSize - 1) * pageSize + pageSize};
+            newArgs = new Object[] {pageSize, lastMaxId, (pageSize - 1) * pageSize + pageSize};
             selectSql = sqlFetchRows + " and id > ?";
         } else {
-            newArgs[0]= (pageNo - 1) * pageSize + pageSize;
-            for(int i=1;i<=args.length;i++){
-                newArgs[i]=args[i-1];
+            newArgs[0] = (pageNo - 1) * pageSize + pageSize;
+            for (int i = 1; i <= args.length; i++) {
+                newArgs[i] = args[i - 1];
             }
-            newArgs[newArgs.length-1]=(pageNo - 1) * pageSize;
+            newArgs[newArgs.length - 1] = (pageNo - 1) * pageSize;
             selectSql = sqlFetchRows;
         }
         
@@ -112,7 +112,7 @@ class ExternalStoragePaginationHelperImpl<E> implements PaginationHelper {
     
     @Override
     public Page<E> fetchPageLimit(final String sqlCountRows, final String sqlFetchRows, final Object[] args,
-                                  final int pageNo, final int pageSize, final RowMapper rowMapper) {
+            final int pageNo, final int pageSize, final RowMapper rowMapper) {
         if (pageNo <= 0 || pageSize <= 0) {
             throw new IllegalArgumentException("pageNo and pageSize must be greater than zero");
         }
@@ -152,7 +152,7 @@ class ExternalStoragePaginationHelperImpl<E> implements PaginationHelper {
     
     @Override
     public Page<E> fetchPageLimit(final String sqlCountRows, final Object[] args1, final String sqlFetchRows,
-                                  final Object[] args2, final int pageNo, final int pageSize, final RowMapper rowMapper) {
+            final Object[] args2, final int pageNo, final int pageSize, final RowMapper rowMapper) {
         if (pageNo <= 0 || pageSize <= 0) {
             throw new IllegalArgumentException("pageNo and pageSize must be greater than zero");
         }
@@ -192,7 +192,7 @@ class ExternalStoragePaginationHelperImpl<E> implements PaginationHelper {
     
     @Override
     public Page<E> fetchPageLimit(final String sqlFetchRows, final Object[] args, final int pageNo, final int pageSize,
-                                  final RowMapper rowMapper) {
+            final RowMapper rowMapper) {
         if (pageNo <= 0 || pageSize <= 0) {
             throw new IllegalArgumentException("pageNo and pageSize must be greater than zero");
         }

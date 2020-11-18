@@ -57,7 +57,7 @@ public class DumpAllBetaProcessor implements NacosTaskProcessor {
                                     cf.getLastModified(), cf.getBetaIps());
                     LogUtil.DUMP_LOG.info("[dump-all-beta-ok] result={}, {}, {}, length={}, md5={}", result,
                             GroupKey2.getKey(cf.getDataId(), cf.getGroup()), cf.getLastModified(),
-                        new String(cf.getContent()).length(), cf.getMd5());
+                            new String(cf.getContent()).length(), cf.getMd5());
                 }
                 
                 actualRowCount += page.getPageItems().size();
